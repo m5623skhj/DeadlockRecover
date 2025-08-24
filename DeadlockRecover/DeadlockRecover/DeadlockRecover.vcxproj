@@ -130,6 +130,7 @@
   <ItemGroup>
     <ClCompile Include="DeadlockRecoverThread.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ThreadJob.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DeadlockRecoverThread.h" />

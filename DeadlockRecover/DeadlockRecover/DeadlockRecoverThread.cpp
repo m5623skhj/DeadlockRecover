@@ -47,7 +47,7 @@ void DeadlockRecoverThread::Run(const std::stop_token& stopToken)
 
 		if (job != nullptr)
 		{
-			job->Execute();
+			job->Do();
 		}
 	}
 }

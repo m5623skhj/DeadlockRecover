@@ -24,6 +24,9 @@
     <ClCompile Include="DeadlockRecoverThread.cpp">
       <Filter>DeadlockRecover</Filter>
     </ClCompile>
+    <ClCompile Include="ThreadJob.cpp">
+      <Filter>DeadlockRecover</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DeadlockRecoverThread.h">
