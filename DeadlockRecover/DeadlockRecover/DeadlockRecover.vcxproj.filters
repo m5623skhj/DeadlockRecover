@@ -13,10 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="DeadlockRecover">
+      <UniqueIdentifier>{8f3497f1-8796-4dd1-8643-62c53d5e0b68}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="DeadlockRecoverThread.cpp">
+      <Filter>DeadlockRecover</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DeadlockRecoverThread.h">
+      <Filter>DeadlockRecover</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadJob.h">
+      <Filter>DeadlockRecover</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
