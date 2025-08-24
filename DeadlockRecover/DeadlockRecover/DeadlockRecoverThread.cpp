@@ -1,7 +1,5 @@
 #include "DeadlockRecoverThread.h"
-
-#include <functional>
-
+#include <string>
 #include "ThreadJob.h"
 
 void DeadlockRecoverThread::Start()
@@ -60,4 +58,9 @@ void DeadlockRecoverThread::InsertJob(std::shared_ptr<ThreadJob>&& job)
 	}
 
 	recoverThreadJobSemaphore.release();
+}
+
+DeadlockException::DeadlockException(const std::source_location& location)
+	: std::runtime_error(location.file_name() + std::string(":") + std::to_string(location.line()))
+{
 }
