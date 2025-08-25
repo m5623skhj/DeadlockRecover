@@ -1,12 +1,14 @@
 #pragma once
-#include <exception>
 #include <mutex>
 #include <source_location>
 
 class DeadlockException;
+class DeadlockRecoverThread;
 
 class ThreadJob : public std::enable_shared_from_this<ThreadJob>
 {
+	friend DeadlockRecoverThread;
+
 public:
 	virtual ~ThreadJob() = default;
 
@@ -20,14 +22,17 @@ public:
 	virtual void Rollback() = 0;
 
 public:
-	static std::unique_lock<std::timed_mutex> AcquireLock(std::timed_mutex& mutex
+	std::unique_lock<std::timed_mutex> AcquireLock(std::timed_mutex& mutex
 		, const std::chrono::milliseconds& timeout = std::chrono::milliseconds(500)
-		, const std::source_location& location = std::source_location::current());
+		, const std::source_location& location = std::source_location::current()) const;
 
 private:
 	static void WriteRollbackLog(const DeadlockException& e);
+	void SetNeedNonTimerLock(bool need);
+	static std::unique_lock<std::timed_mutex> AcquireNonTimerLock(std::timed_mutex& mutex);
 
 private:
+	bool needNonTimerLock = false;
 	bool isCommitted = false;
 };
 
