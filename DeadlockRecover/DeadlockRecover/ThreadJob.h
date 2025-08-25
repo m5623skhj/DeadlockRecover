@@ -35,15 +35,4 @@ class DeadlockException final : public std::runtime_error
 {
 public:
 	explicit DeadlockException(const std::source_location& location = std::source_location::current());
-
-public:
-	[[nodiscard]]
-	const char* what() const noexcept override
-	{
-		const std::string log("Deadlock detected at " + line + '\n');
-		return log.c_str();
-	}
-
-private:
-	std::string line;
 };

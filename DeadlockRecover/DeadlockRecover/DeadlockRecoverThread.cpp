@@ -61,6 +61,6 @@ void DeadlockRecoverThread::InsertJob(std::shared_ptr<ThreadJob>&& job)
 }
 
 DeadlockException::DeadlockException(const std::source_location& location)
-	: std::runtime_error(location.file_name() + std::string(":") + std::to_string(location.line()))
+	: std::runtime_error(std::string("Deadlock detected at ") + location.file_name() + ":" + std::to_string(location.line()))
 {
 }
