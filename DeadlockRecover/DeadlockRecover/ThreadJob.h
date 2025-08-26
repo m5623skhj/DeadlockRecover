@@ -8,6 +8,11 @@ class DeadlockRecoverThread;
 class ThreadJob : public std::enable_shared_from_this<ThreadJob>
 {
 	friend DeadlockRecoverThread;
+	class DeadlockException final : public std::runtime_error
+	{
+	public:
+		explicit DeadlockException(const std::source_location& location = std::source_location::current());
+	};
 
 public:
 	virtual ~ThreadJob() = default;
@@ -34,10 +39,4 @@ private:
 private:
 	bool needNonTimerLock = false;
 	bool isCommitted = false;
-};
-
-class DeadlockException final : public std::runtime_error
-{
-public:
-	explicit DeadlockException(const std::source_location& location = std::source_location::current());
 };
