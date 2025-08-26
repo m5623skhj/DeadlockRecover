@@ -34,7 +34,7 @@ void DeadlockRecoverThread::Run(const std::stop_token& stopToken)
 
 		std::shared_ptr<ThreadJob> job;
 		{
-			std::unique_lock lock(jobQueueMutex);
+			std::scoped_lock lock(jobQueueMutex);
 			if (jobQueue.empty())
 			{
 				continue;
@@ -56,7 +56,7 @@ void DeadlockRecoverThread::Run(const std::stop_token& stopToken)
 void DeadlockRecoverThread::InsertJob(std::shared_ptr<ThreadJob>&& job)
 {
 	{
-		std::unique_lock lock(jobQueueMutex);
+		std::scoped_lock lock(jobQueueMutex);
 		jobQueue.push(std::move(job));
 	}
 

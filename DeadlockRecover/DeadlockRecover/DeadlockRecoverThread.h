@@ -1,7 +1,7 @@
 #pragma once
 #include <thread>
 #include <queue>
-#include <shared_mutex>
+#include <mutex>
 #include <semaphore>
 
 class ThreadJob;
@@ -38,7 +38,7 @@ private:
 	bool isRunning = false;
 	std::jthread recoverThread;
 	
-	std::shared_mutex jobQueueMutex;
+	std::mutex jobQueueMutex;
 	std::queue<std::shared_ptr<ThreadJob>> jobQueue;
 	std::counting_semaphore<> recoverThreadJobSemaphore{ 0 };
 };

@@ -17,6 +17,13 @@ class ThreadJob : public std::enable_shared_from_this<ThreadJob>
 public:
 	virtual ~ThreadJob() = default;
 
+	template <typename T, typename ...Args>
+	static std::shared_ptr<T> CreateJob(Args&& ...args)
+	{
+		static_assert(std::is_base_of_v<ThreadJob, T>, "T must be derived from ThreadJob");
+		return std::make_shared<T>(std::forward<Args>(args)...);
+	}
+
 public:
 	void Do();
 

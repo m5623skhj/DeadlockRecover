@@ -61,7 +61,7 @@ int main()
 		std::cout << "Thread ID: " << std::this_thread::get_id() << " is running." << '\n';
 		while (breaker.load(std::memory_order_relaxed) == false)
 		{
-			const auto job = std::make_shared<TestThreadJob1>();
+			const auto job = ThreadJob::CreateJob<TestThreadJob1>();
 			job->Do();
 		}
 
@@ -73,7 +73,7 @@ int main()
 		std::cout << "Thread ID: " << std::this_thread::get_id() << " is running." << '\n';
 		while (breaker.load(std::memory_order_relaxed) == false)
 		{
-			const auto job = std::make_shared<TestThreadJob2>();
+			const auto job = ThreadJob::CreateJob<TestThreadJob2>();
 			job->Do();
 		}
 		std::cout << "Thread ID: " << std::this_thread::get_id() << " is stopping." << '\n';
