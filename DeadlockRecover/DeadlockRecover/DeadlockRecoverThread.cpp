@@ -21,6 +21,7 @@ void DeadlockRecoverThread::Stop()
 	}
 
 	recoverThread.request_stop();
+	recoverThreadJobSemaphore.release();
 	recoverThread.join();
 	isRunning = false;
 }
