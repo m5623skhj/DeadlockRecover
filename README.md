@@ -1,27 +1,57 @@
 # DeadlockRecover
 
-## 제작 기간
-2025.08.05 ~ 2025.08.27
+**2025.08.05 ~ 2025.08.27**
+
+`DeadlockRecover`는 '데드락 상황을 해소하고 정상적인 진행을 한다'를 목표로 시작한 프로젝트입니다.
 
 ## 개요
+- 락을 획득할 때, 타임아웃이 되면 데드락으로 판단
+- 데드락 감지 시 자동으로 작업 롤백 및 재시도
+- 복구 전용 스레드에서 순차 처리로 데드락 해결
 
-`DeadlockRecover`는 데드락 상황을 해소하고 정상적인 진행을 한다 를 목표로 시작한 프로젝트입니다.
+## 사용 방법
+```cpp
+class MyJob : public ThreadJob
+{
+    void Execute() override
+    {
+        // 작업 수행
+    }
+    
+    void Commit() override
+    {
+        // 커밋
+    }
+    
+    void Rollback() override
+    {
+        // 롤백 처리
+    }
+};
 
-예시:  
-워커 스레드 A, B, 데드락 복구 스레드 C가 있고,  
-락 a, b가 A에선 a -> b 순으로, B에선 b -> a 순으로 데드락이 상황이 발생했다고 가정  
-이 경우, 데드락을 감지하면 A와 B에서는 현재 진행하고 있는 잡(하나 혹은 N개의 기능)을 롤백 시키고, C에 송신  
-C는 이것을 넣어진 순서대로 직접 처리  
+// 사용 이전에 반드시 데드락 복구 스레드를 구동 시켜줘야 합니다.
+DeadlockRecoverThread::GetInstance().Start();
 
----
+// ... 
 
-* ThreadJob
-  * 스레드에서 처리할 잡
-    * 사용자는 Execute, Commit, Rollback를 구현해야 합니다.
-    * 락이 필요할 경우, AcquireLock() 함수를 통해 락을 획득해야 하며, 일정 시간 동안 락을 획득하지 못하면, 데드락으로 판단합니다.
-    * 데드락으로 판단되면, DeadlockException 예외를 throw 시키고, Rollback()을 진행한 후, DeaclockRecoverThread에 해당 잡의 처리를 넘깁니다.
-* DeadlockRecoverThread
-  * 데드락이라고 판단된 ThreadJob을 직렬화시켜 처리합니다.
-  * 해당 스레드에 들어온 잡에서의 락은, 타임아웃 되지 않습니다.
+auto job = ThreadJob::CreateJob<MyJob>(mutexA, mutexB);
+job->Do();
+```
 
----
+## 핵심 기능
+- **ThreadJob**: 작업 단위 추상 클래스
+  - Execute(), Commit(), Rollback() 구현 필요
+  - 락 획득 시, AcquireLock()을 통한 타임아웃 기반 락 획득
+  - 타임아웃 시 DeadlockException 발생 및 자동 롤백
+- **DeadlockRecoverThread**: 데드락 복구 전용 스레드
+  - 실패한 작업을 큐에 저장하여 순차 처리
+  - 타임아웃이 없이 락을 획득하고 실행을 보장
+
+## 동작 원리
+1. 워커 스레드에서 락 획득 시 설정된 타임아웃 내에 획득 실패 시 데드락으로 판단
+2. 현재 작업을 롤백하고 DeadlockRecoverThread에 재시도 요청
+3. 복구 스레드에서 타임아웃 없이 순차 실행하여 데드락 해결
+
+## 요구사항
+- C++20 이상
+- `std::timed_mutex`, `std::jthread`, `std::counting_semaphore` 지원
